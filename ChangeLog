@@ -1,0 +1,16 @@
+===============================================================
+Tag: clmdrv0_0_02
+Originator: tcraig
+Date: July 20, 2015
+One-line Summary: Fix missing -DCLMDRV in clm build
+
+M       scripts/clmdrv.build
+
+===============================================================
+Tag: clmdrv0_0_01
+Originator: tcraig
+Date: July 20, 2015
+One-line Summary: Initial clmdrv commit
+
+===============================================================
+

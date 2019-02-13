@@ -1,0 +1,66 @@
+&clm_inparm
+ albice = 0.60,0.40
+ co2_ppmv = 367.0
+ co2_type = 'constant'
+ create_crop_landunit = .false.
+ dtime = 1800
+ fatmlndfrc = '/glade/p/cesmdata/cseg/inputdata/share/domains/domain.lnd.fv4x5_gx3v7.091218.nc'
+ finidat = ' '
+ fsnowaging = '/glade/p/cesmdata/cseg/inputdata/lnd/clm2/snicardata/snicar_drdt_bst_fit_60_c070416.nc'
+ fsnowoptics = '/glade/p/cesmdata/cseg/inputdata/lnd/clm2/snicardata/snicar_optics_5bnd_c090915.nc'
+ fsurdat = '/glade/p/cesmdata/cseg/inputdata/lnd/clm2/surfdata_map/surfdata_4x5_simyr2000_c141219.nc'
+ glc_do_dynglacier = .false.
+ maxpatch_glcmec = 0
+ maxpatch_pft = 17
+ more_vertlayers = .false.
+ nsegspc = 20
+ paramfile = '/glade/p/cesmdata/cseg/inputdata/lnd/clm2/paramdata/clm_params.c140423.nc'
+ use_century_decomp = .false.
+ use_cn = .false.
+ use_crop = .false.
+ use_lai_streams = .false.
+ use_lch4 = .false.
+ use_nitrif_denitrif = .false.
+ use_vertsoilc = .false.
+/
+&ndepdyn_nml
+/
+&popd_streams
+/
+&light_streams
+/
+&lai_streams
+ lai_mapalgo = 'bilinear'
+ model_year_align_lai = 2001
+ stream_fldfilename_lai = '/glade/p/cesmdata/cseg/inputdata/lnd/clm2/lai_streams/MODISPFTLAI_0.5x0.5_c140711.nc'
+ stream_year_first_lai = 2001
+ stream_year_last_lai = 2013
+/
+&clm_canopyhydrology_inparm
+/
+&clm_soilhydrology_inparm
+/
+&dynamic_subgrid
+/
+&finidat_consistency_checks
+/
+&dynpft_consistency_checks
+/
+&clmu_inparm
+ building_temp_method = 0
+ urban_hac = 'ON'
+ urban_traffic = .false.
+/
+&clm_soilstate_inparm
+ organic_frac_squared = .true.
+/
+&clm_humanindex_inparm
+ calc_human_stress_indices = .false.
+/
+#!--------------------------------------------------------------------------------------------------------------------------
+#! lnd_in:: Comment:
+#! This namelist was created using the following command-line:
+#!     /glade/p/work/tcraig/cesm14.b04clmdrv/components/clm/bld/CLM build-namelist -infile /glade/p/work/tcraig/cesm14.b04clmdrv/cime/scripts/SMS.f45_f45.ICLM45.yellowstone_intel.b04cd01/Buildconf/clmconf/cesm_namelist -csmdata /glade/p/cesmdata/cseg/inputdata -inputdata /glade/p/work/tcraig/cesm14.b04clmdrv/cime/scripts/SMS.f45_f45.ICLM45.yellowstone_intel.b04cd01/Buildconf/clm.input_data_list -ignore_ic_year -namelist  &clm_inparm  start_ymd=00010101
+#!   / -use_case 2000_control -res 4x5 -clm_start_type default -envxml_dir /glade/p/work/tcraig/cesm14.b04clmdrv/cime/scripts/SMS.f45_f45.ICLM45.yellowstone_intel.b04cd01 -l_ncpl 48 -lnd_frac /glade/p/cesmdata/cseg/inputdata/share/domains/domain.lnd.fv4x5_gx3v7.091218.nc -glc_nec 0 -co2_ppmv 367.0 -co2_type constant -config /glade/p/work/tcraig/cesm14.b04clmdrv/cime/scripts/SMS.f45_f45.ICLM45.yellowstone_intel.b04cd01/Buildconf/clmconf/config_cache.xml -bgc sp
+#! For help on options use: /glade/p/work/tcraig/cesm14.b04clmdrv/components/clm/bld/CLM build-namelist -help
+#!--------------------------------------------------------------------------------------------------------------------------

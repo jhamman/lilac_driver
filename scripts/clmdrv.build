@@ -1,0 +1,96 @@
+#! /bin/tcsh -f
+
+if (-e clmdrv.env) then
+  source clmdrv.env
+else
+  echo "ERROR: cannot find clmdrv.env"  && exit -99
+endif
+
+set bldall = 3   # 0=clmdrv 1+=clm 2+=share 3+=all
+
+#------------------------------------------------------------
+
+if ($bldall > 2) then
+
+mkdir -p $BLDDIR
+rm -r -f $BLDDIR/*
+cp -f ${CASEDIR}/build_files/Macros.${MACHINE} $BLDDIR/Macros  || echo "exit Macros.${MACHINE} not found " && exit -1
+cp -f ${CASEDIR}/build_files/Makefile          $BLDDIR/        || echo "exit Makefile not found " && exit -1
+cp -f ${CASEDIR}/build_files/mkDepends         $BLDDIR/        || echo "exit mkDepends not found " && exit -1
+cp -f ${CASEDIR}/build_files/mkSrcfiles        $BLDDIR/        || echo "exit mkSrcfile not found " && exit -1
+cp -f ${CASEDIR}/build_files/genf90.pl         $BLDDIR/        || echo "exit genf90.pl not found " && exit -1
+
+# pio build (in a subdirectory due to Makefile generation)
+cd $BLDDIR
+set PIO_DIR    = $CODEDIR/cime/externals/pio
+set PIO_LIBDIR = $BLDDIR/pio
+mkdir -p ${PIO_LIBDIR}
+cd ${PIO_LIBDIR}
+#cp -f ${CASEDIR}/build_files/mkDepends .
+#cp -f ${CASEDIR}/build_files/mkSrcFiles .
+cp -f ${CASEDIR}/build_files/Macros.${MACHINE} ./Macros
+gmake ${PIO_LIBDIR}/Makefile MODEL=pio USER_CMAKE_OPTS=" -D USER_CMAKE_MODULE_PATH=$CODEDIR/cime/externals/CMake -D GENF90_PATH=$CODEDIR/cime/externals/genf90" PIO_DIR=${PIO_DIR} PIO_LIBDIR=${PIO_LIBDIR} -f ${BLDDIR}/Makefile || exit 1
+gmake -j 4 
+cd $BLDDIR
+cp -f ${PIO_LIBDIR}/pio/*.mod .
+cp -f ${PIO_LIBDIR}/pio/lib*.a .
+
+# gptl build
+cd $BLDDIR
+setenv TIMING_DIR  $CODEDIR/cime/share/timing    # location of timing directory
+gmake -f ${TIMING_DIR}/Makefile libgptl.a MACFILE=${BLDDIR}/Macros GPTL_DIR=${CODEDIR}/cime/externals/gptl GPTL_LIBDIR=${BLDDIR} || exit 1
+
+# mct build configure.h file, mct is built with share
+cd $BLDDIR
+gmake -f Makefile ${BLDDIR}/Makefile.conf MODEL=mct MCT_DIR=${CODEDIR}/cime/externals/mct MCT_LIBDIR=${BLDDIR}  || exit 1
+
+endif
+
+if ($bldall > 1) then
+
+# share build
+cd $BLDDIR
+cat >! Filepath <<EOF
+$CODEDIR/cime/externals/mct/mpeu
+$CODEDIR/cime/externals/mct/mct
+$CODEDIR/cime/driver_cpl/shr
+$CODEDIR/cime/share/csm_share/include
+$CODEDIR/cime/share/csm_share/shr
+$CODEDIR/cime/share/esmf_wrf_timemgr
+EOF
+gmake complib -j 4 MODEL=csm_share COMPLIB=libshare.a USER_CPPDEFS="-DNUM_COMP_INST_ATM=1 -DNUM_COMP_INST_LND=1 -DNUM_COMP_INST_OCN=1 -DNUM_COMP_INST_ICE=1 -DNUM_COMP_INST_GLC=1 -DNUM_COMP_INST_WAV=1 -DNUM_COMP_INST_ROF=1" -f Makefile  || exit 1
+
+endif
+if ($bldall > 0) then
+
+# clm build, need csm_share here for include files
+cd $BLDDIR
+cat >! Filepath <<EOF
+$CODEDIR/cime/share/csm_share/include
+$CODEDIR/cime/share/csm_share/shr
+$CODEDIR/components/clm/src/main
+$CODEDIR/components/clm/src/biogeophys
+$CODEDIR/components/clm/src/biogeochem
+$CODEDIR/components/clm/src/soilbiogeochem
+$CODEDIR/components/clm/src/dyn_subgrid
+$CODEDIR/components/clm/src/ED
+$CODEDIR/components/clm/src/ED/main
+$CODEDIR/components/clm/src/ED/biogeophys
+$CODEDIR/components/clm/src/ED/biogeochem
+$CODEDIR/components/clm/src/ED/fire
+$CODEDIR/components/clm/src/utils
+$CODEDIR/components/clm/src/cpl
+EOF
+gmake complib -j 4 complib MODEL=clm COMPLIB=libclm.a USER_CPPDEFS="-DCLMDRV" -f Makefile MACFILE=Macros  || exit 1
+
+endif
+
+
+
+# clmdrv executable
+#$CODEDIR/cime/driver_cpl/driver
+cd $BLDDIR
+cat >! Filepath <<EOF
+$CODEDIR/clmdrv/src
+EOF
+gmake exec -j 4 clmdrv.exe MODEL=driver -f Makefile  || exit 1

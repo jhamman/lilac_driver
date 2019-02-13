@@ -1,0 +1,42 @@
+#
+# COMPILER=intel
+# OS=LINUX
+# MACH=yellowstone
+#
+# Makefile Macros generated from /glade/p/work/tcraig/cesm14.b04clmdrv/cime/machines/config_compilers.xml 
+#
+
+CPPDEFS+= -DFORTRANUNDERSCORE -DNO_R16 -DLINUX -DCPRINTEL -DNO_SHR_VMATH -DMCT_INTERFACE -DHAVE_MPI -DHAVE_SLASHPROC
+#CPPDEFS+= -DUSE_CONTIGUOUS=contiguous,
+
+CFLAGS:= -O2  -no-opt-dynamic-align -fp-model precise   -xHost 
+
+FC_AUTO_R8:= -r8 
+FFLAGS:=  -no-opt-dynamic-align  -convert big_endian -assume byterecl -ftz -traceback -assume realloc_lhs -fp-model source   -xHost 
+#---DEBUG flags
+FFLAGS += -O0 -g -check uninit -check bounds -check pointers -fpe0 -check noarg_temp_created 
+#---non-DEBUG flags
+#FFLAGS += -O2 
+
+#---THREADED
+#CPPDEFS += -DTHREADED_OMP
+#LDFLAGS += -openmp 
+#FFLAGS_NOOPT += -openmp 
+#CFLAGS += -openmp 
+#FFLAGS += -openmp 
+
+FIXEDFLAGS:= -fixed -132 
+FREEFLAGS:= -free 
+
+GPTL_CPPDEFS:= -DHAVE_NANOTIME -DBIT64 -DHAVE_VPRINTF -DHAVE_BACKTRACE -DHAVE_SLASHPROC -DHAVE_COMM_F2C -DHAVE_TIMES -DHAVE_GETTIMEOFDAY 
+
+MPICC:= mpicc  
+MPIFC:= mpif90 
+SCC:=$(MPICC)
+SFC:=$(MPIFC)
+
+NETCDF_PATH:=$(NETCDF)
+PNETCDF_PATH:=$(PNETCDF)
+
+PIO_FILESYSTEM_HINTS:=gpfs
+

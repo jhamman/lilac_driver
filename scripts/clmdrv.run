@@ -1,0 +1,47 @@
+#! /bin/tcsh -f
+#BSUB -n 8
+#BSUB -R "span[ptile=15]"
+#BSUB -q caldera
+#BSUB -N
+#BSUB -a poe
+#BSUB 
+#BSUB -o cesm.stdout.%J
+#BSUB -e cesm.stderr.%J
+#BSUB -J clmdrv
+#BSUB -W 0:05
+#BSUB -P P93300606
+
+if (-e clmdrv.env) then
+  source clmdrv.env
+else
+  echo "ERROR: cannot find clmdrv.env"  && exit -99
+endif
+
+set SDATE   = `date +"%y%m%d-%H%M%S"`
+
+cat >! $CASEDIR/input_files/lnd_modelio.nml << EOF
+&modelio
+ diri = '$RUNDIR'
+ diro = '$RUNDIR'
+ logfile = 'lnd.log.${SDATE}'
+/
+&pio_inparm
+ pio_numiotasks = -99
+ pio_root = 0
+ pio_stride = -99
+ pio_typename = 'nothing'
+/
+EOF
+
+mkdir -p $RUNDIR
+rm -r -f $RUNDIR/*
+cp -p -f $CASEDIR/input_files/* $RUNDIR/
+cp -p -f $BLDDIR/clmdrv.exe $RUNDIR/
+mkdir -p $RUNDIR/timing
+cd $RUNDIR
+
+setenv OMP_NUM_THREADS 1
+setenv MP_TASK_AFFINITY core:$OMP_NUM_THREADS
+
+mpirun.lsf $RUNDIR/clmdrv.exe
+

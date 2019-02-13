@@ -1,0 +1,10 @@
+&pio_default_inparm
+ pio_async_interface = .false.
+ pio_blocksize = -1
+ pio_buffer_size_limit = -1
+ pio_debug_level = 0
+ pio_numiotasks = -1
+ pio_root = 1
+ pio_stride = -1
+ pio_typename = 'netcdf'
+/
